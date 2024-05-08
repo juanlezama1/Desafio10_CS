@@ -8,7 +8,7 @@ const generateToken = (user) => {
     const privateKey = 'coderhouse'
     const expiracyTime = '12h'
 
-    // Recibe: Quién recibe el token (usuario), la clave privada y el tiempo de expiración
+    // Recibe: El contenido que recibirá el token, en nuestro caso un usuario, la clave privada y el tiempo de expiración
     const token = jwt.sign({user}, privateKey, {expiresIn: expiracyTime})
     return token // Devuelve un TOKEN encriptado, que dura 12 horas. 
 }
