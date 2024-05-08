@@ -117,4 +117,9 @@ sessionsRouter.get('/githubSession', passport.authenticate('github'), async (req
     }
 }) 
 
+// Ruta para autenticarme a través de JWT
+sessionsRouter.get('/testJWT', passport.authenticate('jwt', {session: false}), (req, res) => {
+    res.send(req.user)
+})
+
 export default sessionsRouter
