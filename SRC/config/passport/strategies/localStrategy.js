@@ -1,5 +1,5 @@
 import local from 'passport-local'
-import { userModel } from "../../../models/users"
+import { userModel } from "../../../models/users.js"
 import {comparePSW} from '../../../utils/bcrypt.js'
 
 // Estrategia de autenticación (en este caso, local)

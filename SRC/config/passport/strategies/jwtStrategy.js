@@ -2,24 +2,28 @@ import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import {userModel} from '../../../models/users.js'
 
 const cookieExtractor = req => {
+    // Busca si tengo cookies en la solicitud HTTP, y si tengo, token tomará el valor de la cookie
+    // llamada "jwtCookie". 
+     
     const token = req.cookies? req.cookies.jwtCookie : {}
-    console.log(token)
     return token
 }
 
 const jwtOptions = {
-    // Cuando el cliente mande el Token JWT, lo hará en el Header usando una palabra reservada
+    // Cuando el cliente mande el Token JWT (son los datos de un usuario encriptados en formato JWT Y FIRMADOS con una contraseña en particular) lo hará en el Header usando una palabra reservada
     // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Anulada por ahora ya que no usaré un browser, sino PostMan
     jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-    // Clave para encriptar y leer los Tokens JWT que se generen en ESTE servidor
+    // Clave para comparar si las cookies que fueron enviadas están firmadas con esta contraseña
     secretOrKey: "coderhouse"
 }
 
-// Payload tendrá toda la información correspondiente al usuario
+// Payload tendrá toda la información decodificada del token
+// En nuestro caso, corresponde a la información del usuario
+
 const strategyJWT = new JwtStrategy (jwtOptions, async (payload, done) => {
     try {
-        console.log(payload)
-        const user = await userModel.findById(payload._id)
+        // Busco un usuario en la DB con el mismo ID. Si existe, lo devuelvo
+        const user = await userModel.findById(payload.user._id)
         if (!user)
             {
                 return done(null, false)

@@ -3,6 +3,7 @@ import { userModel } from '../models/users.js'
 import { createHash, comparePSW } from "../utils/bcrypt.js"
 import passport from "passport"
 
+// Devolverá el usuario en req.user, en caso de éxito.
 const sessionsRouter = Router ()
 
 // Ruta para cargar una sesión activa en caso de login exitoso.
@@ -118,8 +119,21 @@ sessionsRouter.get('/githubSession', passport.authenticate('github'), async (req
 }) 
 
 // Ruta para autenticarme a través de JWT
+// El parámetro session:false sirve para indicar que NO se cree una sesión de usuario
+// en el servidor/DB ya que, justamente, se utiliza JWT para este fin
+
+// Pasos:
+// 1) ENTRO POR GET
+// 2) ACCEDO AL MÉTODO DE AUTENTICACIÓN POR PASSPORT
+// 3) EXTRAIGO LA COOKIE jwtCookie (encriptada y firmada con una contraseña en particular)
+// 4) SI LA COOKIE ES JWT Y ESTÁ FIRMADA CON LA CONTRASEÑA, VEO EL CONTENIDO DE LA COOKIE
+// 5) CORRESPONDE A UN USUARIO, SACO SU ID
+// 6) LO BUSCO EN LA DB CON ESE ID, Y SI EXISTE, LO DEVUELVO
+// 7) Y, SI LO DEVOLVÍ, IMPRIMO EL CÓDIGO EN PANTALLA Y MANDO UN STATUS 200 CON EL USUARIO EN CUESTIÓN
+
 sessionsRouter.get('/testJWT', passport.authenticate('jwt', {session: false}), (req, res) => {
-    res.send(req.user)
+    console.log("Usuario identificado con éxito a través de JWT!")
+    res.status(200).send(req.user)
 })
 
 export default sessionsRouter
