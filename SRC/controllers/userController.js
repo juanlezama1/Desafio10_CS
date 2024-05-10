@@ -1,4 +1,4 @@
-import { userModel } from "../models/users"
+import { userModel } from "../models/users.js"
 
 const getUserName = async () => {
 
@@ -16,7 +16,12 @@ const getUserStatus = async () => {
 
     {
         my_user = await userModel.findOne({email: req.session.user.email})
-        my_user.category == "Admin" ? return true: return false
+        if(my_user.category == "Admin"){
+            return true
+        }
+        else {
+            return false
+        }
     }
 }
 

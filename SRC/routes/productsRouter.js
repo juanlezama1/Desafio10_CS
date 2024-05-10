@@ -1,6 +1,6 @@
 import { Router } from "express"
-import { userModel } from "../models/users.js"
 import { createProduct, deleteProduct, updateProduct, readProduct, paginateProducts, readProducts } from "../controllers/productController.js"
+import {getUserName, getUserStatus} from "../controllers/userController.js"
 
 const productsRouter = Router ()
 
@@ -8,18 +8,17 @@ const productsRouter = Router ()
 productsRouter.get('/', async (req, res) => {
 
     const {limit} = req.query // Si no se mandó, tendrá el valor 'undefined'
+    let user_name // Si no hay una sesión activa, valdrán 'undefined'
+    let admin_user
 
     try {
-        // Si no hay una sesión activa, valdrán 'undefined'
-
-        let user_name = await getUserName () // Devolverá el nombre de usuario del usuario logueado
-        let admin_user = await getUserStatus () // Devolverá si el usuario logueado es admin
+        user_name = await getUserName () // Devolverá el nombre de usuario del usuario logueado
+        admin_user = await getUserStatus () // Devolverá si el usuario logueado es admin
     }
 
-    
-
-    
-
+    catch (error) {
+        // Caso donde no hay una sesión activa
+    }
 
     const my_products = await readProducts()
 
@@ -29,11 +28,15 @@ productsRouter.get('/', async (req, res) => {
     else 
 
     {
-        // En el caso de que la DB no esté vacía, devuelvo la cantidad solicitada
+        // En donde hay productos para mostrar, devuelvo la cantidad solicitada
         // O todos los productos en caso que no esté definido el query param limit
         let cantidad_productos_exhibidos
         !limit? cantidad_productos_exhibidos = my_products.length: cantidad_productos_exhibidos = limit
 
+        let standard_user
+        admin_user? (standard_user = false):
+        (standard_user = true, admin_user = true)
+        
         // Caso de que envíen un límite, pero no sea un número
         isNaN(cantidad_productos_exhibidos) || cantidad_productos_exhibidos < 0? res.status(400).render('templates/error', {error_description: "El límite debe ser numérico y mayor a cero"}): (
             (cantidad_productos_exhibidos > my_products.length) && (cantidad_productos_exhibidos = my_products.length),

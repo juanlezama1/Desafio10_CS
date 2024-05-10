@@ -1,4 +1,4 @@
-import { productModel } from "../models/products"
+import { productModel } from "../models/products.js"
 
 const createProduct = async(new_product) => {
     let my_product = await productModel.create(new_product)
