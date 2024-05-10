@@ -1,6 +1,7 @@
 import { Router } from "express"
 import { productModel } from "../models/products.js"
 import { userModel } from "../models/users.js"
+import { createProduct, deleteProduct, updateProduct, readProduct } from "../controllers/productController.js"
 
 const productsRouter = Router ()
 
@@ -95,84 +96,71 @@ productsRouter.get('/pagination', async (req, res) => {
 // LECTURA DE UN PRODUCTO ESPECÍFICO
 productsRouter.get('/:pid', async (req, res) => {
 
-    console.log("Enviando producto específico...")
     let product_code = req.params.pid // Obtengo el código del producto
 
     // Intento obtenerlo de la DB
     try {
-        let my_product = await productModel.findById(product_code).lean()
-        res.status(200).render('templates/home_id', {title: 'Producto Seleccionado:', product: my_product}),
-        console.log("Producto específico enviado!")
+        let my_product = await readProduct(product_code)
+        res.status(200).render('templates/home_id', {title: 'Producto Seleccionado:', product: my_product})
     }
 
     catch (error)
 
     {
-        res.status(400).render('templates/error', {error_description: "El producto no existe"}),
-        console.log("Producto específico no existe!")
+        res.status(400).render('templates/error', {error_description: "El producto no existe"})
     }
 })
 
 // UPDATE DE UN PRODUCTO ESPECÍFICO
 productsRouter.put('/:pid', async (req, res) => {
 
-    console.log("Actualizando producto específico...")
     let product_code = req.params.pid // Obtengo el código del producto a actualizar
     let updated_product = req.body // Obtengo los valores del producto actualizado
 
     // Busco por ID, lo actualizo y devuelvo el producto actualizado
     try {
-        let my_product = await productModel.findByIdAndUpdate(product_code, updated_product, {new: 'true'}).lean()
-        res.status(200).render('templates/home_id', {title: 'Producto Actualizado:', product: my_product}),
-        console.log("Producto específico actualizado!")
+        const my_product = await updateProduct (product_code, updated_product)
+        res.status(200).render('templates/home_id', {title: 'Producto Actualizado:', product: my_product})
     }
 
     catch (error)
 
     {
-        res.status(400).render('templates/error', {error_description: "El producto no existe"}),
-        console.log("Producto específico a actualizar no existe!")
+        res.status(400).render('templates/error', {error_description: "El producto a actualizar no existe"})
     }
 })
 
 // DELETE DE UN PRODUCTO ESPECÍFICO
 productsRouter.delete('/:pid', async (req, res) => {
 
-    console.log("Eliminando producto específico...")
     let product_code = req.params.pid // Obtengo el código del producto a eliminar
 
     try {
-        await productModel.findByIdAndDelete(product_code)
-        res.status(200).send("Producto específico eliminado"),
-        console.log("Producto específico eliminado!")
+        await deleteProduct(product_code)
+        res.status(200).send("Producto específico eliminado")
     }
 
     catch (error)
 
     {
-        res.status(400).render('templates/error', {error_description: "El producto a eliminar no existe"}),
-        console.log("Producto específico a eliminar no existe!")
+        res.status(400).render('templates/error', {error_description: "El producto a eliminar no existe"})
     }
 })
 
 // CREATE DE UN PRODUCTO
 productsRouter.post('/', async (req, res) => {
 
-    console.log("Creando producto ...")
-
-    const new_product = req.body
+    const new_product = req.body // Obtengo el nuevo producto a cargar
 
     try {
-        let my_product = await productModel.create(new_product)
-        my_product = await productModel.findById(my_product._id.toString()).lean()
+        const my_product = await createProduct (new_product)
         res.status(200).render('templates/home_id', {title: 'Producto Creado:', product: my_product})
-        console.log("Producto creado en DB!")
     }
 
     catch (error)
 
     {
-        console.log("Error al crear producto: ", error)
+        res.status(500).send("Error al crear producto: ", error)
     }
 })
 
