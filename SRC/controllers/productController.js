@@ -20,4 +20,22 @@ const readProduct = async(product_code) => {
     return my_product
 }
 
-export {createProduct, deleteProduct, updateProduct, readProduct}
+const paginateProducts = async(limit, sort, page, query_status, query_category) => {
+    !page && (page = 1) // Por default será 1
+    !limit && (limit = 10) // Por default será 10
+    !sort? (sort = null) : (sort = ({price: sort})) // Por default no los ordenará
+
+    let filters = {}
+    query_status && (filters.status = (query_status == 'true')) // Por default hace una búsqueda general
+    query_category && (filters.category = query_category) // Por default trae todas las categorías
+    
+    const paginated_products = await productModel.paginate(filters, {limit: limit, page: page, sort: sort})
+    return paginated_products
+}
+
+const readProducts = async() => {
+    const my_products = await productModel.find().lean()
+    return my_products
+}
+
+export {createProduct, deleteProduct, updateProduct, readProduct, paginateProducts, readProducts}

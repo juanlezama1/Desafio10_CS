@@ -1,49 +1,27 @@
 import { Router } from "express"
-import { productModel } from "../models/products.js"
 import { userModel } from "../models/users.js"
-import { createProduct, deleteProduct, updateProduct, readProduct } from "../controllers/productController.js"
+import { createProduct, deleteProduct, updateProduct, readProduct, paginateProducts, readProducts } from "../controllers/productController.js"
 
 const productsRouter = Router ()
 
 // LECTURA DE TODOS LOS PRODUCTOS
 productsRouter.get('/', async (req, res) => {
+
     const {limit} = req.query // Si no se mandó, tendrá el valor 'undefined'
 
-    let user // Si no tiene una sesión activa, valdrá 'undefined'
-
     try {
-        if (req.session.user.email)
-            {
-                user = await userModel.findOne({email: req.session.user.email})
-            }
+        // Si no hay una sesión activa, valdrán 'undefined'
+
+        let user_name = await getUserName () // Devolverá el nombre de usuario del usuario logueado
+        let admin_user = await getUserStatus () // Devolverá si el usuario logueado es admin
     }
 
-    catch (error)
-    {
-        // Usuario sin identificar
-    }
+    
 
-    let user_name // Si no tiene una sesión activa, todas valdrán 'undefined'
-    let admin_user
-    let standard_user
+    
 
-    if (user)
 
-    {
-        user_name = user.first_name
-        user.category == "Admin"? (
-            admin_user = true,
-            standard_user = false
-        ):
-        (
-            admin_user = false,
-            standard_user = true
-        )
-    }
-
-    console.log("Enviando productos al cliente...")
-
-    const my_products = await productModel.find().lean()
+    const my_products = await readProducts()
 
     if (my_products.length === 0 ) // Caso de que la DB esté vacía
         res.status(200).render('templates/error', {error_description: "Sin productos por ahora"})
@@ -61,37 +39,25 @@ productsRouter.get('/', async (req, res) => {
             (cantidad_productos_exhibidos > my_products.length) && (cantidad_productos_exhibidos = my_products.length),
             res.status(200).render('templates/home', {title: 'Mis Productos', subtitle: `Cantidad de productos exhibidos: ${cantidad_productos_exhibidos}`, products: my_products.splice(0, cantidad_productos_exhibidos), user: user_name, admin_user: admin_user, standard_user: standard_user}))
     }
-
-    console.log("Productos enviados!")
-} )
+})
 
 // LECTURA DE TODOS LOS PRODUCTOS EN MODO PAGINATION
 productsRouter.get('/pagination', async (req, res) => {
-    
+
     // Query params que podría recibir. Si no se mandan, tendrán el valor 'undefined'
-    let {limit} = req.query 
-    !limit && (limit = 10) // Por default será 10
+    let {limit, sort, page, query_status, query_category} = req.query 
 
-    let {page} = req.query
-    !page && (page = 1) // Por default será 1
-    
-    let {sort} = req.query 
-    !sort? (sort = null) : (sort = ({price: sort})) // Por default no los ordenará
+    try {
+        const paginated_products = await paginateProducts(limit, sort, page, query_status, query_category)
+        res.status(200).send(paginated_products)
+    }
 
-    let filters = {}
-
-    let {query_status} = req.query 
-    query_status && (filters.status = (query_status == 'true')) // Por default hace una búsqueda general
-    
-    let {query_category} = req.query
-    query_category && (filters.category = query_category) // Por default trae todas las categorías
-
-    const prueba = await productModel.paginate(filters, {limit: limit, page: page, sort: sort})
-
-    res.status(200).send(prueba)
-
-    console.log("Productos enviados!")
-} )
+    catch (error)
+ 
+    {
+        res.status(500).send("Error al paginar los productos: ", error)
+    }
+})
 
 // LECTURA DE UN PRODUCTO ESPECÍFICO
 productsRouter.get('/:pid', async (req, res) => {
