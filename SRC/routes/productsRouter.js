@@ -7,7 +7,8 @@ const productsRouter = Router ()
 // LECTURA DE TODOS LOS PRODUCTOS
 productsRouter.get('/', async (req, res) => {
 
-    const {limit} = req.query // Si no se mandó, tendrá el valor 'undefined'
+    const {limit} = req.query // Si no se mandó, tendrá el valor 'undefined
+    
     let user_name // Si no hay una sesión activa, valdrán 'undefined'
     let admin_user
 
