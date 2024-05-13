@@ -1,6 +1,6 @@
 import local from 'passport-local'
 import { userModel } from "../../../models/users.js"
-import {comparePSW} from '../../../utils/bcrypt.js'
+import {comparePSW, createHash} from '../../../utils/bcrypt.js'
 
 // Estrategia de autenticación (en este caso, local)
 const localStrategy = local.Strategy
@@ -16,12 +16,10 @@ const strategyLocalLogin = new localStrategy (
             if (user && (comparePSW(password, user.password)))
 
             {
-                console.log("Logueo de usuario exitoso!")
                 return done (null, user)
             }
 
             else {
-                console.log("Intento de logueo de usuario sin éxito!")
                 return done(null, false);
             }
         }
@@ -29,7 +27,6 @@ const strategyLocalLogin = new localStrategy (
         catch (error)
     
         {
-            console.log("Error al loguear usuario!")
             return done(error)
         }}
 )

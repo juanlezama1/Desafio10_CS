@@ -1,21 +1,21 @@
 import { userModel } from "../models/users.js"
 
-const getUserName = async () => {
+const getUserName = async (req) => {
 
     if (req.session.user.email)
 
     {
-        my_user = await userModel.findOne({email: req.session.user.email})
+        const my_user = await userModel.findOne({email: req.session.user.email})
         return my_user.first_name
     }
 }
 
-const getUserStatus = async () => {
+const getUserStatus = async (req) => {
 
     if (req.session.user.email)
 
     {
-        my_user = await userModel.findOne({email: req.session.user.email})
+        const my_user = await userModel.findOne({email: req.session.user.email})
         if(my_user.category == "Admin"){
             return true
         }

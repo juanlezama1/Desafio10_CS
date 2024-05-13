@@ -63,13 +63,11 @@ sessionsRouter.post('/register', passport.authenticate('register'), async (req, 
 sessionsRouter.get('/register', async (req, res) => {
     
     res.status(200).render('templates/user_registration')
-    console.log("Usuario por registrarse...")
 })
 
 // Ruta para registro de un usuario por GET (visual)
 sessionsRouter.get('/login', async (req, res) => {
 
-    console.log("Usuario por loguearse...")
     res.status(200).render('templates/user_login')
 })
 
@@ -77,10 +75,8 @@ sessionsRouter.get('/login', async (req, res) => {
 sessionsRouter.get('/logout', async (req, res) => {
     try {
         req.session.destroy()
-        console.log("Usuario finalizó sesión!")
 
         // Usuario finalizó su sesión, lo envío a la página principal
-
         res.redirect('/')
     }
 
@@ -88,7 +84,6 @@ sessionsRouter.get('/logout', async (req, res) => {
 
     {
         res.status(500).send("Error al finalizar sesión!")
-        console.log("Error al finalizar la sesión del usuario")
     }
 })
 
@@ -132,7 +127,6 @@ sessionsRouter.get('/githubSession', passport.authenticate('github'), async (req
 // 7) Y, SI LO DEVOLVÍ, IMPRIMO EL CÓDIGO EN PANTALLA Y MANDO UN STATUS 200 CON EL USUARIO EN CUESTIÓN
 
 sessionsRouter.get('/testJWT', passport.authenticate('jwt', {session: false}), (req, res) => {
-    console.log("Usuario identificado con éxito a través de JWT!")
     res.status(200).send(req.user)
 })
 

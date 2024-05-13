@@ -13,8 +13,8 @@ productsRouter.get('/', async (req, res) => {
     let admin_user
 
     try {
-        user_name = await getUserName () // Devolverá el nombre de usuario del usuario logueado
-        admin_user = await getUserStatus () // Devolverá si el usuario logueado es admin
+        user_name = await getUserName (req) // Devolverá el nombre de usuario del usuario logueado
+        admin_user = await getUserStatus (req) // Devolverá si el usuario logueado es admin o no, con true/false
     }
 
     catch (error) {
@@ -35,8 +35,19 @@ productsRouter.get('/', async (req, res) => {
         !limit? cantidad_productos_exhibidos = my_products.length: cantidad_productos_exhibidos = limit
 
         let standard_user
-        admin_user? (standard_user = false):
-        (standard_user = true, admin_user = true)
+
+        if (admin_user) {
+            standard_user = false
+        }
+
+        else if (admin_user === false) {
+            standard_user = true
+        }
+
+        else {
+            admin_user = false
+            standard_user = false
+        }
         
         // Caso de que envíen un límite, pero no sea un número
         isNaN(cantidad_productos_exhibidos) || cantidad_productos_exhibidos < 0? res.status(400).render('templates/error', {error_description: "El límite debe ser numérico y mayor a cero"}): (

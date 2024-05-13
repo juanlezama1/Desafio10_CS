@@ -46,5 +46,9 @@ const productSchema = new Schema ({
 // Añado la extensión del pagination
 productSchema.plugin(paginate)
 
+productSchema.pre('save', () => {
+    console.log("guardaste un producto!")
+})
+
 // Exporto este prototipo en mi colección
 export const productModel = model ("products", productSchema)

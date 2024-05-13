@@ -62,7 +62,7 @@ cartsRouter.put('/:cid/products/:pid', async (req, res) => {
     catch (error)
 
     {
-        res.status(400).render('templates/error', {error_description: "El carrito no existe"}),
+        res.status(400).render('templates/error', {error_description: "El carrito no existe"})
     }
 })
 
@@ -91,7 +91,7 @@ cartsRouter.delete('/:cid/products/:pid', async (req, res) => {
     catch (error)
 
     {
-        res.status(400).render('templates/error', {error_description: "El carrito no existe!"}),
+        res.status(400).render('templates/error', {error_description: "El carrito no existe!"})
     }
 })
 
@@ -110,7 +110,7 @@ cartsRouter.delete('/:cid/', async (req, res) => {
     catch (error)
 
     {
-        res.status(400).render('templates/error', {error_description: "El carrito no existe!"}),
+        res.status(400).render('templates/error', {error_description: "El carrito no existe!"})
     }
 })
 

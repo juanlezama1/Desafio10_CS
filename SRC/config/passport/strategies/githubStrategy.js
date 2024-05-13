@@ -8,8 +8,8 @@ import { userModel } from '../../../models/users.js'
 // configurado de manera pública. Para este trabajo se considera EL EMAIL ES PÚBLICO
 
 const strategyGitHub = new GitHubStrategy({
-    clientID: "A COMPLETAR - ENVIADO POR CHAT",
-    clientSecret: "A COMPLETAR - ENVIADO POR CHAT",
+    clientID: "Iv23liAMlvc8ItBq5qT5",
+    clientSecret: "42807b3021eae3e7ad77f5adde3a0ed06292814f",
     callbackURL: "http://localhost:8080/sessions/githubSession",
     scope: ['user:email'] // Solicitud del email
 }, async (accessToken, refreshToken, profile, done) => {
